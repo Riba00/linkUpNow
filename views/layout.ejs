@@ -16,10 +16,21 @@
 
         <nav class="nav">
             <a href="#">Create Group</a>
-            <a href="#">Log In</a>
+            <a href="/signIn">Log In</a>
             <a href="/signUp">Sign Up</a>
         </nav>
     </header>
+
+    <% if (locals.messages) { %>
+        <% const categoria = Object.keys(locals.messages) %>
+        <% if(categoria.length) { %>
+             <% locals.messages[categoria].forEach(alerta => {  %>
+                 <div class="alertas">
+                    <p class="alerta <%= categoria %>"> <%= alerta %></p>
+                 </div>
+             <% }) %>
+        <% } %>
+     <% } %>
 
     <%- body %>
 
