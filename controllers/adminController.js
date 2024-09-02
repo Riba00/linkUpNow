@@ -1,5 +1,10 @@
-exports.administrationPanel = (req, res, next) => {
+const Groups = require('../models/Groups');
+
+exports.administrationPanel = async (req, res, next) => {
+    const groups = await Groups.findAll({where: {userId : req.user.id}})
+
     res.render('administration', {
-        pageName: 'Administration Panel'
+        pageName: 'Administration Panel',
+        groups
     })
 }
