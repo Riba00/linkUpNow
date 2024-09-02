@@ -21,7 +21,12 @@ module.exports = function() {
 
     router.get('/administration', authController.authenticatedUser ,adminController.administrationPanel)
 
-    router.get('/new-group', authController.authenticatedUser , groupsController.newGroupForm)
+    router.get('/new-group', authController.authenticatedUser, groupsController.newGroupForm)
+    router.post('/new-group',
+         authController.authenticatedUser, 
+         groupsController.uploadImage, 
+         groupsController.newGroup
+        )
 
 
 

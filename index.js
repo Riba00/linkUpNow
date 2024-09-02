@@ -11,6 +11,8 @@ const router = require('./routes');
 
 const db = require('./config/db');
 require('./models/Users')
+require('./models/Categories')
+require('./models/Groups')
 db.sync().then(()=> console.log('DB Connected')).catch((error)=>console.log(error))
 
 require('dotenv').config({path: '.env'});
@@ -53,9 +55,6 @@ app.use((req, res, next) => {
 
 // Routing
 app.use('/', router());
-
-
-
 
 app.listen(process.env.PORT, () => {
     console.log('Server is running');
