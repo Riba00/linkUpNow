@@ -49,5 +49,30 @@ module.exports = function () {
     groupsController.editGroup
   );
 
+  router.get(
+    "/image-group/:groupId",
+    authController.authenticatedUser,
+    groupsController.editImageForm
+  );
+
+  router.post(
+    "/image-group/:groupId",
+    authController.authenticatedUser,
+    groupsController.uploadImage,
+    groupsController.editImage
+  );
+
+  router.get(
+    "/delete-group/:groupId",
+    authController.authenticatedUser,
+    groupsController.deleteGroupForm
+  );
+
+  router.post(
+    "/delete-group/:groupId",
+    authController.authenticatedUser,
+    groupsController.deleteGroup
+  );
+
   return router;
 };

@@ -3,6 +3,7 @@ const Groups = require("../models/Groups");
 
 const multer = require("multer");
 const shortid = require("shortid");
+const fs = require("fs");
 
 const multerConfiguration = {
   limits: { fileSize: 100000 },
@@ -90,24 +91,26 @@ exports.editGroupForm = async (req, res, next) => {
   querys.push(Categories.findAll());
 
   const [group, categories] = await Promise.all(querys);
-  
-  res.render('edit-group', {
+
+  res.render("edit-group", {
     pageName: `Edit group : ${group.name}`,
     group,
-    categories
+    categories,
   });
 };
 
 exports.editGroup = async (req, res, next) => {
-  const group = await Groups.findOne({ where: { id : req.params.groupId, userId: req.user.id}});
+  const group = await Groups.findOne({
+    where: { id: req.params.groupId, userId: req.user.id },
+  });
 
   if (!group) {
-    req.flash('error', 'Invalid Operation');
+    req.flash("error", "Invalid Operation");
     res.redirect(`/administration`);
     return next();
   }
 
-  const {name, description, categoryId, url} = req.body;
+  const { name, description, categoryId, url } = req.body;
 
   group.name = name;
   group.description = description;
@@ -116,6 +119,105 @@ exports.editGroup = async (req, res, next) => {
 
   await group.save();
 
-  req.flash('exito', 'Group Saved Successfully');
+  req.flash("exito", "Group Saved Successfully");
+  res.redirect("/administration");
+};
+
+exports.editImageForm = async (req, res, next) => {
+  const group = await Groups.findOne({
+    where: { id: req.params.groupId, userId: req.user.id },
+  });
+
+  if (!group) {
+    req.flash("error", "Invalid Operation");
+    res.redirect(`/administration`);
+    return next();
+  }
+
+  res.render("edit-image", {
+    pageName: `Edit Image : ${group.name}`,
+    group,
+  });
+};
+
+exports.editImage = async (req, res, next) => {
+  const group = await Groups.findOne({
+    where: { id: req.params.groupId, userId: req.user.id },
+  });
+
+  if (!group) {
+    req.flash("error", "Invalid Operation");
+    res.redirect(`/administration`);
+    return next();
+  }
+
+  if (req.file && group.image) {
+    const previousImagePath =
+      __dirname + `/../public/uploads/groups/${group.image}`;
+
+    fs.unlink(previousImagePath, (error) => {
+      if (error) {
+        console.log(error);
+      }
+      return;
+    });
+  }
+
+  if (req.file) {
+    group.image = req.file.filename;
+  }
+
+  await group.save();
+  req.flash("exito", "Image Changed Successfully");
+  res.redirect("/administration");
+};
+
+exports.deleteGroupForm = async (req, res, next) => {
+  const group = await Groups.findOne({
+    where: { id: req.params.groupId, userId: req.user.id },
+  });
+
+  if (!group) {
+    req.flash("error", "Invalid Operation");
+    res.redirect(`/administration`);
+    return next();
+  }
+
+  res.render("delete-group", {
+    pageName: `Delete Group : ${group.name}`,
+    group,
+  });
+};
+
+exports.deleteGroup = async (req, res, next) => {
+  const group = await Groups.findOne({
+    where: { id: req.params.groupId, userId: req.user.id },
+  });
+
+  if (!group) {
+    req.flash("error", "Invalid Operation");
+    res.redirect(`/administration`);
+    return next();
+  }
+
+  if (group.image) {
+    const imagePath =
+      __dirname + `/../public/uploads/groups/${group.image}`;
+
+    fs.unlink(imagePath, (error) => {
+      if (error) {
+        console.log(error);
+      }
+      return;
+    });
+  }
+
+  await Groups.destroy({
+    where: {
+      id: req.params.groupId
+    }
+  });
+
+  req.flash('exito', 'Group Deleted Successfully');
   res.redirect('/administration');
-}
+};

@@ -1,0 +1,23 @@
+<main class="contenedor contenedor-formularios">
+    <h1><%= pageName %></h1>
+
+    <form method="post" class="default-form" enctype="multipart/form-data">
+        <% if(group.image) { %>
+        <div class="campo">
+            <label>Current Image</label>
+            <img src="/uploads/groups/<%= group.image %>" width="400">
+        </div>
+        <% } else { %>
+            <p>There's no current image</p>
+        <% } %>
+
+        <div class="campo">
+            <label>Image</label>
+            <input type="file" name="image">
+        </div>
+
+        <div class="campo enviar">
+            <input type="submit" class="btn btn-rosa" value="Save">
+        </div>
+    </form>
+</main>
