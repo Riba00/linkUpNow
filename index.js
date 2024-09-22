@@ -13,6 +13,7 @@ const db = require('./config/db');
 require('./models/Users')
 require('./models/Categories')
 require('./models/Groups')
+require('./models/Events')
 db.sync().then(()=> console.log('DB Connected')).catch((error)=>console.log(error))
 
 require('dotenv').config({path: '.env'});

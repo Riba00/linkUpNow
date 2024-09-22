@@ -6,6 +6,7 @@ const homeController = require("../controllers/homeController");
 const usersController = require("../controllers/usersController");
 const adminController = require("../controllers/adminController");
 const groupsController = require("../controllers/groupsController");
+const eventsController = require("../controllers/eventsController");
 
 module.exports = function () {
   router.get("/", homeController.home);
@@ -24,6 +25,7 @@ module.exports = function () {
     adminController.administrationPanel
   );
 
+  // GROUPS
   router.get(
     "/new-group",
     authController.authenticatedUser,
@@ -72,6 +74,21 @@ module.exports = function () {
     "/delete-group/:groupId",
     authController.authenticatedUser,
     groupsController.deleteGroup
+  );
+
+
+  // EVENTS
+  router.get(
+    "/new-event",
+    authController.authenticatedUser,
+    eventsController.newEventForm
+  );
+
+  router.post(
+    "/new-event",
+    authController.authenticatedUser,
+    eventsController.sanitizeEvent,
+    eventsController.newEvent
   );
 
   return router;
