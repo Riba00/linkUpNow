@@ -1,10 +1,39 @@
 import { OpenStreetMapProvider } from "leaflet-geosearch";
 
-const lat = 40.6555447;
-const lng = 0.4683695;
+const lat = document.querySelector('#lat').value || 40.6555447;
+const lng = document.querySelector('#lng').value || 0.4683695;
+const address = document.querySelector('#address').value || '';
 
 const map = L.map("mapa").setView([lat, lng], 15);
 let marker;
+
+const geocodeService = L.esri.Geocoding.geocodeService();
+
+if (lat && lng) {
+	if (marker) {
+		map.removeLayer(marker);
+	}
+
+	marker = new L.marker([lat, lng], {
+		draggable: true,
+		autoPan: true,
+	})
+		.addTo(map)
+		.bindPopup(address);
+
+	// Detect marker movement
+	marker.on("moveend", function (e) {
+		
+		marker = e.target;
+		const position = marker.getLatLng();
+		map.panTo(new L.LatLng(position.lat, position.lng));
+
+		geocodeService.reverse().latlng(position, 15).run(function (error, result2) {
+			fillInputs(result2);
+			marker.bindPopup(result2.address.LongLabel).openPopup();
+		});
+	});
+}
 
 document.addEventListener("DOMContentLoaded", () => {
 	L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
@@ -25,12 +54,15 @@ function searchAdress(e) {
 			map.removeLayer(marker);
 		}
 
-		const geocodeService = L.esri.Geocoding.geocodeService();
 		const provider = new OpenStreetMapProvider();
 
 		provider.search({ query: e.target.value }).then((result) => {
 			geocodeService.reverse().latlng(result[0].bounds[0], 15).run(function (error, result2) {
 				fillInputs(result2);
+
+				if (marker) {
+					map.removeLayer(marker);
+				}
 
 				map.setView(result[0].bounds[0], 15);
 

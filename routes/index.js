@@ -91,5 +91,15 @@ module.exports = function () {
     eventsController.newEvent
   );
 
+  router.get('/edit-event/:id', 
+    authController.authenticatedUser,
+    eventsController.editEventForm
+  )
+
+  router.post('/edit-event/:id', 
+    authController.authenticatedUser,
+    eventsController.editEvent
+  )
+
   return router;
 };

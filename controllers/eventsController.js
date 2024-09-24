@@ -52,3 +52,60 @@ exports.sanitizeEvent = (req, res, next) => {
 
     next();
 }
+
+exports.editEventForm = async (req, res, next) => {
+
+    const querys = [];
+
+    querys.push( Groups.findAll({ where: { userId: req.user.id}}));
+    querys.push( Events.findByPk(req.params.id));
+
+    const [ groups, event ] = await Promise.all(querys);
+
+    if (!groups || !event) {
+        req.flash('error', 'Invalid Operation');
+        res.redirect('/administration');
+        return next();
+    }
+
+    res.render('edit-event', {
+        pageName: `Edit Event : ${event.title}`,
+        groups,
+        event
+    })
+}
+
+exports.editEvent = async (req, res, next) => {
+
+    const event = await Events.findOne({where : {id: req.params.id, userId: req.user.id}});
+
+    if (!event) {
+        req.flash('error', 'Invalid Operation');
+        res.redirect('/administration');
+        return next();
+    }
+    
+    const { groupId, title, guest, date, hour, capacity, description, address, city, state, country, lat, lng } = req.body
+
+    event.groupId = groupId;
+    event.title = title;
+    event.guest = guest;
+    event.date = date;
+    event.hour = hour;
+    event.capacity = capacity;
+    event.description = description;
+    event.address = address;
+    event.city = city;
+    event.state = state;
+    event.country = country;
+
+    const point = {type: 'Point', coordinates: [parseFloat(lat), parseFloat(lng)]};
+
+    event.location = point;
+
+    await event.save();
+
+    req.flash('exito', 'Event Updated Successfully');
+    res.redirect('/administration');
+}
+
