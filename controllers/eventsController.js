@@ -109,3 +109,28 @@ exports.editEvent = async (req, res, next) => {
     res.redirect('/administration');
 }
 
+exports.deleteEventForm = async (req, res, next) => {
+    const event = await Events.findOne({where: {id: req.params.id, userId: req.user.id}});
+
+    if (!event) {
+        req.flash('error', 'Invalid Operation');
+        res.redirect('/administration');
+        return next();
+    }
+
+    res.render('delete-event', {
+        pageName: `Delete Event : ${event.title}`
+    })
+}
+
+exports.deleteEvent = async (req, res, next) => {
+    await Events.destroy({
+        where: {
+            id: req.params.id
+        }
+    });
+
+    req.flash('exito', 'Event Deleted Successfully');
+    res.redirect('/administration');
+}
+

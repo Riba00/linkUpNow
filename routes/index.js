@@ -101,5 +101,15 @@ module.exports = function () {
     eventsController.editEvent
   )
 
+  router.get('/delete-event/:id',
+    authController.authenticatedUser,
+    eventsController.deleteEventForm
+  )
+
+  router.post('/delete-event/:id',
+    authController.authenticatedUser,
+    eventsController.deleteEvent
+  )
+
   return router;
 };
