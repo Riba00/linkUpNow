@@ -63,6 +63,63 @@ exports.confirmAccount = async (req, res, next) => {
 
     req.flash('exito', 'Account confirmed, you can sing in');
     res.redirect('/signIn');
-    
+}
 
+exports.editProfileForm = async (req, res, next) => {
+    const user = await Users.findByPk(req.user.id);
+
+    res.render('edit-profile', {
+        pageName: 'Edit Profile',
+        user
+    })
+}
+
+exports.editProfile = async (req, res) => {
+    const user = await Users.findByPk(req.user.id);
+
+    req.sanitizeBody('name');
+    req.sanitizeBody('email');
+
+    const { name, description, email} = req.body;
+    
+    user.name = name;
+    user.description = description;
+    user.email = email;
+
+    await user.save();
+
+    req.flash('exito', 'User Updated Successfully');
+    res.redirect('/administration');
+}
+
+exports.changePasswordForm = (req, res) => {
+    res.render('change-password', {
+        pageName: `Change Password`
+    })
+}
+
+exports.changePassword = async (req, res, next) => {
+
+    const user = await Users.findByPk(req.user.id);
+
+    if (!user.validatePassword(req.body.currentPassword)) {
+        req.flash('error', 'Current Password is not correct');
+        res.redirect('/administration');
+        return next();
+    }
+
+    const hash = user.hashPassword(req.body.newPassword);
+
+    user.password = hash;
+
+    await user.save();
+
+    req.logout(req.user, (err) => {
+        if (err) return next(err);
+        req.flash(
+          "exito",
+          "Password Updated. Please, sing in"
+        );
+        res.redirect("/signIn");
+    })
 }

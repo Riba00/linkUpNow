@@ -10,6 +10,7 @@ const Users = db.define('users', {
     },
     name: Sequelize.STRING(60),
     image: Sequelize.STRING(60),
+    description: Sequelize.TEXT,
     email: {
         type: Sequelize.STRING(30),
         allowNull: false,
@@ -39,13 +40,17 @@ const Users = db.define('users', {
 }, {
     hooks: {
         beforeCreate(user) {
-            user.password = bcrypt.hashSync(user.password, bcrypt.genSaltSync(10), null);
+            user.password = Users.prototype.hashPassword(user.password);
         }
     }
 });
 
 Users.prototype.validatePassword = function(password) {
     return bcrypt.compareSync(password, this.password)
+}
+
+Users.prototype.hashPassword = function(password) {
+    return bcrypt.hashSync(password, bcrypt.genSaltSync(10), null);
 }
 
 module.exports = Users;

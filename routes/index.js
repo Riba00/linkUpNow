@@ -111,5 +111,26 @@ module.exports = function () {
     eventsController.deleteEvent
   )
 
+  // PROFILE
+  router.get('/edit-profile',
+    authController.authenticatedUser,
+    usersController.editProfileForm
+  )
+
+  router.post('/edit-profile',
+    authController.authenticatedUser,
+    usersController.editProfile
+  )
+
+  router.get('/change-password',
+    authController.authenticatedUser,
+    usersController.changePasswordForm
+  )
+
+  router.post('/change-password',
+    authController.authenticatedUser,
+    usersController.changePassword
+  )
+  
   return router;
 };

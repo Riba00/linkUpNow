@@ -38,7 +38,6 @@ exports.sanitizeEvent = (req, res, next) => {
     req.sanitizeBody('title').escape();
     req.sanitizeBody('guest').escape();
     req.sanitizeBody('capacity').escape();
-    req.sanitizeBody('description').escape();
     req.sanitizeBody('date').escape();
     req.sanitizeBody('time').escape();
     req.sanitizeBody('capacity').escape();
